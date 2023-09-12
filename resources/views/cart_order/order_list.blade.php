@@ -1,5 +1,5 @@
-@extends('templates.fontTemplete')
-@section('style')
+@extends('templates.indexTemplate')
+@section('head')
     <style>
         .product-img {
             width: 100px;
@@ -82,9 +82,26 @@
             border-width: 10px;
             border-radius: 10px 0px 10px 0px;
         }
+
+        input[type=number]::-webkit-outer-spin-button,
+        input[type=number]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .number-input{
+            text-align: center;
+        }
+
+        .product-img{
+            display: block;
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+        }
     </style>
 @endsection
-@section('main-content')
+@section('main')
     <div class="container">
         <section class="order-header">
             <div class="apart mb-4 mt-3">
@@ -116,49 +133,40 @@
                         <h5 class="mb-0">訂單資訊</h5>
                     </li>
                     {{-- start-要買的產品 buy-product --}}
-                    <li class="buy-product list-group-item d-flex justify-content-between align-items-center">
-                        <div class="product-img"></div>
-                        <div class="product-info">
-                            <h6>冰紛樂</h6>
-                            <p>1kg</p>
-                        </div>
-                        <div class="product-count d-flex align-items-center">
-                            <button type="button" class="btn h-100 btn-count">+</button>
-                            <input class="count-form-control" type="number" placeholder="商品數量"
-                                aria-label="default input example">
-                            <button type="button" class="btn btn-count">-</button>
-                        </div>
-                        <div class="product-price">
-                            <h5>$1000</h5>
-                        </div>
-                    </li>
-                    <li class="buy-product list-group-item d-flex justify-content-between align-items-center">
-                        <div class="product-img"></div>
-                        <div class="product-info">
-                            <h6>冰紛樂</h6>
-                            <p>1kg</p>
-                        </div>
-                        <div class="product-count d-flex align-items-center">
-                            <button type="button" class="btn h-100 btn-count">+</button>
-                            <input class="count-form-control" type="number" placeholder="商品數量"
-                                aria-label="default input example">
-                            <button type="button" class="btn btn-count">-</button>
-                        </div>
-                        <div class="product-price">
-                            <h5>$1000</h5>
-                        </div>
-                    </li>
+                        @foreach ($carts as $cart)
+                        @dump($cart->product)
+                            <li class="buy-product list-group-item d-flex justify-content-between align-items-center">
+                                <div class="product-img">
+                                    <img src="{{ $cart->product->img_path }}" alt="" class="product-img">
+                                </div>
+                                <div class="product-info">
+                                    <h6>{{ $cart->product->name }}</h6>
+                                    <p>{{ $cart->product->desc }}</p>
+                                </div>
+                                <div class="product-count d-flex align-items-center">
+                                    <button type="button" class="btn h-100 btn-count">-</button>
+                                    <input class="count-form-control number-input" type="number" value="{{ $cart->qty }}" placeholder="商品數量"
+                                        aria-label="default input example">
+                                    <button type="button" class="btn btn-count">+</button>
+                                </div>
+                                <div class="product-price">
+                                    <h5>{{ $cart->product->price * $cart->qty }}</h5>
+                                </div>
+                            </li>
+
+                        @endforeach
+
                     {{-- end-要買的產品 buy-product --}}
                     <li class="list-group-item d-flex align-items-center justify-content-between">
                         <h6 class="mb-0">總金額</h6>
-                        <h5 class="mb-0">$2000</h5>
+                        <h5 class="mb-0">${{ $total }}</h5>
                     </li>
                 </ul>
             </div>
         </section>
         <section class="order-footer"></section>
         <section class="order-footer d-flex justify-content-end mt-5 w-75 m-auto">
-            <a href="{{ route('order.tran') }}"><button class="btn btn-success">下一步</button></a>
+            <a href=""><button class="btn btn-success">下一步</button></a>
         </section>
 
 
@@ -167,5 +175,7 @@
     </div>
 @endsection
 @section('js')
-    <script></script>
+    <script>
+
+    </script>
 @endsection

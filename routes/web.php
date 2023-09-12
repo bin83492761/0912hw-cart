@@ -8,6 +8,7 @@ use App\Http\Controllers\FrontController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ReplyController;
 use App\Http\Controllers\BackendController;
+use App\Http\Controllers\CartController;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,9 +41,14 @@ Route::middleware('auth')->group(function() {
         // 刪除
         Route::delete('/destroy/{id}', [ReplyController::class, 'destroy'])->name('replyDestroy');
     });
-    Route::middleware(['role.weight: 2'])->prefix('/user/infomation')->group(function () {
-        Route::get('/', [FrontController::class, 'user_info'])->name('user.info');
-        Route::post('/update', [FrontController::class, 'user_info_update'])->name('user.info.update');
+    Route::middleware(['role.weight: 2'])->group(function () {
+        Route::prefix('/user/infomation')->group(function () {
+            Route::get('/', [FrontController::class, 'user_info'])->name('user.info');
+            Route::post('/update', [FrontController::class, 'user_info_update'])->name('user.info.update');
+        });
+        Route::prefix('/cart')->group(function(){
+            Route::get('/step1',[CartController::class, 'step1'])->name('cart.step1');
+        });
     });
 
     Route::post('/products/add-carts', [FrontController::class, 'add_cart'])->name('front.addCart');
@@ -54,13 +60,13 @@ Route::middleware(['auth', 'role.weight: 1'])->prefix('admin')->group(function (
 
     Route::prefix('/product')->group(function () {
         Route::get('/list', [ProductController::class, 'index'])->name('product.index');
-        
+
         Route::get('/create', [ProductController::class, 'create'])->name('product.create');
         Route::post('/store', [ProductController::class, 'store'])->name('product.store');
-        
+
         Route::get('/edit/{id}', [ProductController::class, 'edit'])->name('product.edit');
         Route::put('/update/{id}', [ProductController::class, 'update'])->name('product.update');
-        
+
         Route::delete('/delete/{id}', [ProductController::class, 'destroy'])->name('product.delete');
     });
 
