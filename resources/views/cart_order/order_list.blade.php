@@ -89,11 +89,11 @@
             margin: 0;
         }
 
-        .number-input{
+        .number-input {
             text-align: center;
         }
 
-        .product-img{
+        .product-img {
             display: block;
             width: 100px;
             height: 100px;
@@ -133,28 +133,29 @@
                         <h5 class="mb-0">訂單資訊</h5>
                     </li>
                     {{-- start-要買的產品 buy-product --}}
-                        @foreach ($carts as $cart)
-                        @dump($cart->product)
-                            <li class="buy-product list-group-item d-flex justify-content-between align-items-center">
-                                <div class="product-img">
-                                    <img src="{{ $cart->product->img_path }}" alt="" class="product-img">
-                                </div>
-                                <div class="product-info">
-                                    <h6>{{ $cart->product->name }}</h6>
-                                    <p>{{ $cart->product->desc }}</p>
-                                </div>
-                                <div class="product-count d-flex align-items-center">
-                                    <button type="button" class="btn h-100 btn-count">-</button>
-                                    <input class="count-form-control number-input" type="number" value="{{ $cart->qty }}" placeholder="商品數量"
-                                        aria-label="default input example">
-                                    <button type="button" class="btn btn-count">+</button>
-                                </div>
-                                <div class="product-price">
-                                    <h5>{{ $cart->product->price * $cart->qty }}</h5>
-                                </div>
-                            </li>
+                    @foreach ($carts as $cart)
+                        {{-- @dump($cart->product) --}}
+                        <li class="buy-product list-group-item d-flex justify-content-between align-items-center">
+                            <div class="product-img">
+                                <img src="{{ $cart->product->img_path }}" alt="" class="product-img">
+                            </div>
+                            <div class="product-info">
+                                <h6>{{ $cart->product->name }}</h6>
+                                <p>{{ $cart->product->desc }}</p>
+                            </div>
+                            <div class="product-count d-flex align-items-center">
 
-                        @endforeach
+                                {{-- 這邊設$cart->id給function，後續可用來找qty --}}
+                                <button type="button" class="btn h-100 btn-count"
+                                    onclick="minus('{{ $cart->id }}')">-</button>
+                                <input id="cart{{ $cart->id }}" class="count-form-control number-input" type="number" value="{{ $cart->qty }}" placeholder="商品數量" aria-label="default input example">
+                                <button type="button" class="btn btn-count" onclick="plus({{ $cart->id }})">+</button>
+                            </div>
+                            <div class="product-price">
+                                <h5>{{ $cart->product->price * $cart->qty }}</h5>
+                            </div>
+                        </li>
+                    @endforeach
 
                     {{-- end-要買的產品 buy-product --}}
                     <li class="list-group-item d-flex align-items-center justify-content-between">
@@ -174,8 +175,18 @@
 
     </div>
 @endsection
+
 @section('js')
     <script>
+        function plus(id) {
+            const input = document.querySelector(`#cart${ id }`);
+            input.value++;
+        }
 
+        function minus(id) {
+            const input = document.querySelector(`#cart${ id }`);
+            if (input.value <= 1) return;
+            input.value--;
+        }
     </script>
 @endsection
