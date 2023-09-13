@@ -48,6 +48,7 @@ Route::middleware('auth')->group(function() {
         });
         Route::prefix('/cart')->group(function(){
             Route::get('/step1',[CartController::class, 'step1'])->name('cart.step1');
+            Route::put('/updateQty',[CartController::class, 'updateQty'])->name('cart.updateQty');
         });
     });
 

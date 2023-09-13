@@ -148,7 +148,8 @@
                                 {{-- 這邊設$cart->id給function，後續可用來找qty --}}
                                 <button type="button" class="btn h-100 btn-count"
                                     onclick="minus('{{ $cart->id }}')">-</button>
-                                <input id="cart{{ $cart->id }}" class="count-form-control number-input" type="number" value="{{ $cart->qty }}" placeholder="商品數量" aria-label="default input example">
+                                <input id="cart{{ $cart->id }}" class="count-form-control number-input" type="number"
+                                    value="{{ $cart->qty }}" placeholder="商品數量" aria-label="default input example">
                                 <button type="button" class="btn btn-count" onclick="plus({{ $cart->id }})">+</button>
                             </div>
                             <div class="product-price">
@@ -172,7 +173,6 @@
 
 
 
-
     </div>
 @endsection
 
@@ -181,12 +181,40 @@
         function plus(id) {
             const input = document.querySelector(`#cart${ id }`);
             input.value++;
+            // 將id跟input.value送過去給fetchqty
+            fetchqty(id, input.value);
         }
 
         function minus(id) {
             const input = document.querySelector(`#cart${ id }`);
             if (input.value <= 1) return;
             input.value--;
+            // 將id跟input.value送過去給fetchqty
+            fetchqty(id, input.value);
+        }
+
+        // 得到plus/minus過來的資料
+        // id=cart_id  qty=商品數量
+        function fetchqty(id, qty) {
+
+            // 在js直接用指令生成一張表單並填寫
+            const formData = new FormData();
+
+            formData.append('_token', '{{ csrf_token() }}');
+            formData.append('cart_id', id);
+            formData.append('qty', qty);
+            fetch( {
+                method: 'PUT',
+                body: formData,
+                // fetch可以等化成form的這個模式
+                // <form action="url" method="PUT">
+                //     @csrf
+                //     <input type="text" name="cart_id" value="id" id="">
+                //     <input type="text" name="qty" value="qty" id="">
+                // </form>
+            }).then({
+
+            });
         }
     </script>
 @endsection

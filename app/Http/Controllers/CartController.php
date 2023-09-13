@@ -17,8 +17,14 @@ class CartController extends Controller
         // 將商品數量與價格相乘，變成總價
         foreach ($carts as $value) {
             $total += $value->product->price * $value->qty;
-        }
+        };
 
         return view('cart_order.order_list',compact('carts','total'));
+    }
+
+    public function updateQty(Request $request){
+        // $request->validate(){
+
+        // };
     }
 }
