@@ -142,17 +142,17 @@
                             <div class="product-info">
                                 <h6>{{ $cart->product->name }}</h6>
                                 <p>{{ $cart->product->desc }}</p>
+                                <p>${{ $cart->product->price }}</p>
                             </div>
                             <div class="product-count d-flex align-items-center">
 
                                 {{-- 這邊設$cart->id給function，後續可用來找qty --}}
                                 <button type="button" class="btn h-100 btn-count"
                                     onclick="minus('{{ $cart->id }}')">-</button>
-                                <input id="cart{{ $cart->id }}" class="count-form-control number-input" type="number"
-                                    value="{{ $cart->qty }}" placeholder="商品數量" aria-label="default input example">
+                                <input id="cart{{ $cart->id }}" class="count-form-control number-input" type="number" value="{{ $cart->qty }}" placeholder="商品數量" aria-label="default input example" onchange="inputQty(`{{$cart->id}}`)">
                                 <button type="button" class="btn btn-count" onclick="plus({{ $cart->id }})">+</button>
                             </div>
-                            <div class="product-price">
+                            <div id="price{{ $cart->id }}" class="product-price">
                                 <h5>{{ $cart->product->price * $cart->qty }}</h5>
                             </div>
                         </li>
@@ -161,7 +161,7 @@
                     {{-- end-要買的產品 buy-product --}}
                     <li class="list-group-item d-flex align-items-center justify-content-between">
                         <h6 class="mb-0">總金額</h6>
-                        <h5 class="mb-0">${{ $total }}</h5>
+                        <h5 id="total" class="mb-0">${{ $total }}</h5>
                     </li>
                 </ul>
             </div>
@@ -193,6 +193,10 @@
             fetchqty(id, input.value);
         }
 
+        function inputQty(){
+            
+        }
+
         // 得到plus/minus過來的資料
         // id=cart_id  qty=商品數量
         function fetchqty(id, qty) {
@@ -201,10 +205,11 @@
             const formData = new FormData();
 
             formData.append('_token', '{{ csrf_token() }}');
+            formData.append('_method', 'PUT');
             formData.append('cart_id', id);
             formData.append('qty', qty);
-            fetch( {
-                method: 'PUT',
+            fetch('{{ route('cart.updateQty') }}', {
+                method: 'POST',
                 body: formData,
                 // fetch可以等化成form的這個模式
                 // <form action="url" method="PUT">
@@ -212,8 +217,21 @@
                 //     <input type="text" name="cart_id" value="id" id="">
                 //     <input type="text" name="qty" value="qty" id="">
                 // </form>
-            }).then({
+            }).then((responce) => {
+                return responce.json();
+            }).then((data) => {
+                const price = document.querySelector(`#price${id}>h5`);
+                const totalEl = document.querySelector(`#total`);
+                price.textContent = '$' + `${data.price}`;
 
+                // 挑選出第一個字是price的id，找出其下的h5
+                const all_price = document.querySelectorAll('[id^=price]>h5');
+                let total = 0;
+                all_price.forEach(element => {
+                    const price = parseInt(element.textContent.substring(1));
+                    total += price;
+                });
+                totalEl.textContent = '$' + total;
             });
         }
     </script>
